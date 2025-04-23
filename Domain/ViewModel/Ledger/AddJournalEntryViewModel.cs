@@ -2,5 +2,5 @@
 
 public class AddJournalEntryViewModel
 {
-    
+    public object Lines { get; set; }
 }

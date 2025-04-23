@@ -12,8 +12,6 @@ public interface IPaymentService
 
     Task<PaginatedList<PaymentViewModel>> ListByInvoiceAsync(string invoiceId,
         int page = 1, int size = 20);
-
-    /*──────────── حساب بانکی ────────────*/
     Task<OperationResult> AddBankAccountAsync(AddBankAccountViewModel addBankAccountViewModel);
     Task<IEnumerable<BankAccountViewModel>> GetBankAccountsAsync();
 }

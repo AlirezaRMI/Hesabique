@@ -2,5 +2,5 @@
 
 public class EditInvoiceViewModel
 {
-    
+    public string Id { get; set; }
 }
