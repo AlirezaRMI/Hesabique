@@ -3,10 +3,11 @@
 public class BaseEntity<T>
 {
     public T? Id { get; set; }
-  
 
-    public DateOnly CreateDate { get; set; } = DateOnly.FromDateTime(DateTime.Now);
-    public DateOnly? UpdateDate { get; set; } = DateOnly.FromDateTime(DateTime.Now);
+    public TimeOnly CreatedTime { get; set; }=TimeOnly.FromDateTime(DateTime.UtcNow);
+    public TimeOnly UpdatedTime { get; set; }=TimeOnly.FromDateTime(DateTime.UtcNow);
+    public DateOnly CreateDate { get; set; } = DateOnly.FromDateTime(DateTime.UtcNow);
+    public DateOnly? UpdateDate { get; set; } = DateOnly.FromDateTime(DateTime.UtcNow);
 }
 
 public class BaseEntity : BaseEntity<string>
