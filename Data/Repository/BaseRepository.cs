@@ -50,7 +50,6 @@ public class BaseRepository<T>(HesabiqueContext context,DbSet<T> dbSet) : IBaseR
     {
         IQueryable<T> query = dbSet;
 
-        // اعمال include با استفاده از نام‌ها (رشته‌ای)
         if (!string.IsNullOrWhiteSpace(includes))
         {
             foreach (var include in includes.Split(',', StringSplitOptions.RemoveEmptyEntries))
@@ -84,7 +83,6 @@ public class BaseRepository<T>(HesabiqueContext context,DbSet<T> dbSet) : IBaseR
     {
         IQueryable<T> query = dbSet;
 
-        // اعمال includeها
         if (includes != null)
         {
             foreach (var include in includes)
@@ -93,7 +91,6 @@ public class BaseRepository<T>(HesabiqueContext context,DbSet<T> dbSet) : IBaseR
             }
         }
 
-        // پیدا کردن کلید اصلی با EF Core metadata
         var keyProperty = context.Model
             .FindEntityType(typeof(T))?
             .FindPrimaryKey()?
@@ -136,10 +133,24 @@ public class BaseRepository<T>(HesabiqueContext context,DbSet<T> dbSet) : IBaseR
         await context.SaveChangesAsync();
     }
 
-    public async Task DeleteAsync(T entity)
+    public async Task<bool> DeleteAsync(T entity)
     {
-        context.Set<T>().Remove(entity);
-        await context.SaveChangesAsync();
+        if (entity is null)
+            return false;
+
+        var property = typeof(T).GetProperty("IsDeleted");
+        if (property is not null && property.PropertyType == typeof(bool))
+        {
+            property.SetValue(entity, true);
+            context.Set<T>().Update(entity);
+        }
+        else
+        {
+            context.Set<T>().Remove(entity);
+        }
+
+        var result = await context.SaveChangesAsync();
+        return result > 0;
     }
     
 }

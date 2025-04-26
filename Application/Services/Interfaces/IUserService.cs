@@ -4,20 +4,11 @@ using Domain.ViewModel.User;
 
 namespace Application.Services.Interfaces;
 
-/// <summary>
-/// عملیات مربوط به کاربر (ثبت نام، ورود، مدیریت پروفایل)  
-/// *تمام متدها <see langword="async"/> هستند و در صورت رخداد خطا
-///  استثنای منحصربه‌فرد ServiceException پرتاب می‌کنند.*  
-/// </summary>
 public interface IUserService
 {
     Task AddUserAsync(AddUserViewModel vm);
-
-
     Task<EditeResult> EditUserAsync(EditeUserViewModel vm);
-    
     Task<long> GetBalanceAsync(string userId);
-    
     Task<RegisterResult> RegisterAsync(RegisterViewModel vm);
     
     Task<(LoginResult Result, UserViewModel? User)> LoginAsync(LoginUserViewModel vm);

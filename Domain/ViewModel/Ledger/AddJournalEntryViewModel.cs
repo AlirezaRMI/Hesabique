@@ -2,5 +2,7 @@
 
 public class AddJournalEntryViewModel
 {
-    public object Lines { get; set; }
+    public List<AddJournalLineViewModel> Lines { get; set; } = new();
+    public string Refrence { get; set; }
+    public DateTime CreateDate { get; set; }
 }

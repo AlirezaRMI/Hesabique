@@ -7,7 +7,7 @@ public class JournalEntry : BaseEntity
     public string TenantId { get; set; }
    
 
-    public DateTime Date { get; set; }
+    public DateTime CreateDate { get; set; }
     public string? Reference { get; set; }
 
     #region Relation

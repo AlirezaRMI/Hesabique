@@ -1,6 +1,12 @@
-﻿namespace Domain.ViewModel;
+﻿using Domain.Enumes.Trade;
+using Domain.ViewModel.Invoice;
+
+namespace Domain.ViewModel;
 
 public class AddInvoiceViewModel
 {
-    public object Lines { get; set; }
+    public DateTime IssueDate { get; set; }
+    public InvoiceType Type { get; set; }
+    public string CounterpartyId { get; set; }
+    public List<AddInvoiceLineViewModel> Lines { get; set; } = new();
 }

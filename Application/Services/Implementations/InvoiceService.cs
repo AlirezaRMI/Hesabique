@@ -1,42 +1,29 @@
 ﻿using Application.Helpers;
 using Application.Services.Interfaces;
+using AutoMapper;
 using Domain.Entities.Trade;
 using Domain.Enumes.BaseEnum;
-using Domain.ViewModel;
 using Domain.ViewModel.Invoice;
 using Domain.IRepository;
+using Domain.ViewModel;
 using Microsoft.EntityFrameworkCore;
 
 namespace Application.Services.Implementations;
 
 public class InvoiceService(
     IBaseRepository<Invoice> repository,
-    IBaseRepository<InvoiceLine> lineRepository) : IInvoiceService
+    IBaseRepository<InvoiceLine> lineRepository,
+    IMapper mapper) : IInvoiceService
 {
     public async Task<OperationResult> CreateAsync(AddInvoiceViewModel addInvoiceViewModel)
     {
-        // if (addInvoiceViewModel.Lines is null || addInvoiceViewModel.Lines == "")
-        //     return OperationResult.ValidationError;
-        //
-        // var invoice = new Invoice
-        // {
-        //     Id = Guid.NewGuid().ToString("N"),
-        //     IssueDate = addInvoiceViewModel,
-        //     Type = addInvoiceViewModel.,
-        //     CounterpartyId = addInvoiceViewModel.,
-        //     Total = addInvoiceViewModel.Lines.(l => l.Qty * l.UnitPrice),
-        //     Lines = addInvoiceViewModel.Lines.(l => new InvoiceLine
-        //     {
-        //         Id = Guid.NewGuid().ToString("N"),
-        //         Description = l.Description,
-        //         Qty = l.Qty,
-        //         UnitPrice = l.UnitPrice,
-        //         VatRate = l.VatRate
-        //     }).ToList()
-        // };
-        //
-        // await invRepo.AddAsync(invoice);
-         return OperationResult.Success;
+        if (!addInvoiceViewModel.Lines.Any())
+            return OperationResult.ValidationError;
+        var invoice = mapper.Map<Invoice>(addInvoiceViewModel);
+        invoice.Total = invoice.Lines.Sum(l => l.Quantity * l.UnitPrice);
+
+        await repository.AddAsync(invoice);
+        return OperationResult.Success;
     }
 
     public async Task<OperationResult> UpdateAsync(EditInvoiceViewModel editInvoiceViewModel)
@@ -45,15 +32,12 @@ public class InvoiceService(
             .Include(i => i.Lines)
             .SingleOrDefaultAsync(i => i.Id == editInvoiceViewModel.Id);
 
-        // if (invoice is null) return OperationResult.NotFound;
-        //
-        // invoice.IssueDate = editInvoiceViewModel.IssueDate;
-        // invoice.Type = editInvoiceViewModel.Type;
-        // invoice.CounterpartyId = editInvoiceViewModel.CounterpartyId;
-        //
-        // invoice.Total = invoice.Lines.Sum(l => l.Qty * l.UnitPrice);
-        //
-        // await invRepo.UpdateAsync(invoice);
+        if (invoice is null) return OperationResult.NotFound;
+
+        mapper.Map(editInvoiceViewModel, invoice);
+        invoice.Total = invoice.Lines.Sum(l => l.Quantity * l.UnitPrice);
+
+        await repository.UpdateAsync(invoice);
         return OperationResult.Success;
     }
 
@@ -65,7 +49,6 @@ public class InvoiceService(
         await repository.DeleteAsync(invoice);
         return OperationResult.Success;
     }
-    
 
     public async Task<InvoiceViewModel?> FindAsync(string invoiceId)
     {
@@ -73,82 +56,50 @@ public class InvoiceService(
             .Include(i => i.Lines)
             .SingleOrDefaultAsync(i => i.Id == invoiceId);
 
-        // return invoice is null
-        //     ? null
-        //     : new InvoiceViewModel
-        //     (
-        //         Id: invoice.Id,
-        //         Total: invoice.Total,
-        //         Type: invoice.Type.ToString(),
-        //         Date: invoice.IssueDate,
-        //         Lines: invoice.Lines.Select(l => new InvoiceLineViewModel
-        //         (
-        //             Id: l.Id,
-        //             Description: l.Description,
-        //             Qty: l.Qty,
-        //             UnitPrice: l.UnitPrice,
-        //             VatRate: l.VatRate
-        //         )).ToList()
-        //     );
-        return null;
+        return invoice is null ? null : mapper.Map<InvoiceViewModel>(invoice);
     }
 
     public async Task<PaginatedList<InvoiceViewModel>> ListAsync(
         InvoiceFilterViewModel filter, int page = 1, int size = 20)
     {
-        // var query = repository.GetQueryable();
-        //
-        // if (filter.FromDate is not null)
-        //     query = query.Where(i => i.IssueDate >= filter.FromDate);
-        //
-        // if (filter.ToDate is not null)
-        //     query = query.Where(i => i.IssueDate <= filter.ToDate);
-        //
-        // if (filter.Type is not null)
-        //     query = query.Where(i => i.Type == filter.Type);
-        //
-        // if (!string.IsNullOrWhiteSpace(filter.Search))
-        //     query = query.Where(i => i.Id.Contains(filter.Search));
-        //
-        // int total = await query.CountAsync();
-        //
-        // var items = await query
-        //     .OrderByDescending(i => i.IssueDate)
-        //     .Skip((page - 1) * size)
-        //     .Take(size)
-        //     .Select(i => new InvoiceViewModel
-        //     (
-        //         Id: i.Id,
-        //         Total: i.Total,
-        //         Type: i.Type.ToString(),
-        //         Date: i.IssueDate,
-        //         Lines: new List<InvoiceLineViewModel>() // برای خلاصه‌‌نمایش
-        //     ))
-        //     .ToListAsync();
-        // return new PaginatedList<InvoiceViewModel>(items, total, page, size);
-        return null;
+        IQueryable<Invoice> query = repository.GetQueryable();
+
+        if (filter.FromDate is not null)
+            query = query.Where(i => i.IssueDate >= filter.FromDate);
+
+        if (filter.ToDate is not null)
+            query = query.Where(i => i.IssueDate <= filter.ToDate);
+
+        if (filter.Type is not null)
+            query = query.Where(i => i.Type == filter.Type);
+
+        if (!string.IsNullOrWhiteSpace(filter.Search))
+            query = query.Where(i => i.Id != null && i.Id.Contains(filter.Search));
+
+        int total = await query.CountAsync();
+
+        var items = await query
+            .OrderByDescending(i => i.IssueDate)
+            .Skip((page - 1) * size)
+            .Take(size)
+            .Select(i => mapper.Map<InvoiceViewModel>(i))
+            .ToListAsync();
+
+        return new PaginatedList<InvoiceViewModel>(items, total, page, size);
     }
-    
 
     public async Task<OperationResult> AddLineAsync(string invoiceId, AddInvoiceLineViewModel addInvoiceLineViewModel)
     {
         var invoice = await repository.GetByIdAsync(invoiceId);
         if (invoice is null) return OperationResult.NotFound;
 
-        // var line = new InvoiceLine
-        // {
-        //     Id = Guid.NewGuid().ToString("N"),
-        //     InvoiceId = invoiceId,
-        //     Description = vm.Description,
-        //     Qty = vm.Qty,
-        //     UnitPrice = vm.UnitPrice,
-        //     VatRate = vm.VatRate
-        // };
-        //
-        // await lineRepository.AddAsync(line);
-        //
-        // invoice.Total += vm.Qty * vm.UnitPrice;
-        // await invRepo.UpdateAsync(invoice);
+        var line = mapper.Map<InvoiceLine>(addInvoiceLineViewModel);
+        line.InvoiceId = invoiceId;
+
+        await lineRepository.AddAsync(line);
+
+        invoice.Total += addInvoiceLineViewModel.Quantity * addInvoiceLineViewModel.UnitPrice;
+        await repository.UpdateAsync(invoice);
 
         return OperationResult.Success;
     }
@@ -158,10 +109,10 @@ public class InvoiceService(
         var line = await lineRepository.GetByIdAsync(invoiceLineId);
         if (line is null) return OperationResult.NotFound;
 
-        var invoice = await repository.GetByIdAsync(line.InvoiceId!);
+        var invoice = await repository.GetByIdAsync(line.InvoiceId);
         if (invoice is null) return OperationResult.Error;
 
-        invoice.Total -= line.Qty * line.UnitPrice;
+        invoice.Total -= line.Quantity * line.UnitPrice;
 
         await lineRepository.DeleteAsync(line);
         await repository.UpdateAsync(invoice);
@@ -176,7 +127,7 @@ public class InvoiceService(
                           .SingleOrDefaultAsync(i => i.Id == invoiceId)
                       ?? throw new KeyNotFoundException("Invoice not found.");
 
-        invoice.Total = invoice.Lines.Sum(l => l.Qty * l.UnitPrice);
+        invoice.Total = invoice.Lines.Sum(l => l.Quantity * l.UnitPrice);
         await repository.UpdateAsync(invoice);
 
         return invoice.Total;

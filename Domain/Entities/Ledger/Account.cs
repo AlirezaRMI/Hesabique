@@ -8,7 +8,7 @@ public class Account : BaseEntity
     public string TenantId { get; set; }
    
 
-    public required string Code { get; set; }
+    public required string AccountCode { get; set; }
     public required string Name { get; set; }
     public AccountType Type { get; set; }
 

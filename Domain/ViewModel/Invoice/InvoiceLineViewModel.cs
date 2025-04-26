@@ -1,7 +1,8 @@
 ﻿namespace Domain.ViewModel.Invoice;
 
-public class AddInvoiceLineViewModel
+public class InvoiceLineViewModel
 {
+    public string? Id { get; set; }
     public string Description { get; set; }
     public int Quantity { get; set; }
     public long UnitPrice { get; set; }

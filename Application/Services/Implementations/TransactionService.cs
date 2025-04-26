@@ -1,6 +1,6 @@
 using Application.Helpers;
 using Application.Services.Interfaces;
-using Data.Context;
+using AutoMapper;
 using Domain.Entities;
 using Domain.Enum.Transeation;
 using Domain.IRepository;
@@ -10,59 +10,50 @@ using Microsoft.EntityFrameworkCore;
 namespace Application.Services.Implementations;
 
 public class TransactionService(
-    IBaseRepository<Transaction> repo,
-    HesabiqueContext ctx) : ITransactionService
+    IBaseRepository<Transaction> repository,
+    IMapper mapper) : ITransactionService
 {
     public async Task<AddTransactionResult> CreateAsync(
-        AddTransactionViewModel vm, string? userId)
+        AddTransactionViewModel addTransactionViewModel, string? userId)
     {
         if (userId is null) return AddTransactionResult.Error;
 
         var now = DateTime.Now;
 
-        var trx = new Transaction
-        {
-            UserId = userId.ToString(),
-            Description = vm.Description,
-            Price = vm.Price,
-            Type = vm.Type,
-            Status = TransactionStatus.Pending,
-            CreateDate = DateOnly.FromDateTime(now),
-            CreatTime = TimeOnly.FromDateTime(now)
-        };
+        var transaction = mapper.Map<Transaction>(addTransactionViewModel);
+        transaction.UserId = userId;
+        transaction.Status = TransactionStatus.Pending;
+        transaction.CreateDate = DateOnly.FromDateTime(now);
+        transaction.CreatTime = TimeOnly.FromDateTime(now);
 
-        await repo.AddAsync(trx);
+        await repository.AddAsync(transaction);
         return AddTransactionResult.Success;
     }
 
-    public async Task<MineTransaction> UpdateAsync(EditeTransactionViewModel vm)
+    public async Task<MineTransaction> UpdateAsync(EditeTransactionViewModel editeTransactionViewModel)
     {
-        if (vm.Id is null) return MineTransaction.Unknown;
+        if (editeTransactionViewModel.Id is null) return MineTransaction.Unknown;
 
-        var trx = await repo.GetByIdAsync(vm.Id);
-        if (trx is null) return MineTransaction.Unknown;
+        var transaction = await repository.GetByIdAsync(editeTransactionViewModel.Id);
+        if (transaction is null) return MineTransaction.Unknown;
 
-        trx.Price = vm.Price;
-        trx.Description = vm.Description;
-        trx.Status = vm.Status;
-        trx.Type = vm.Type;
-        trx.CreatTime = vm.CreatTime;
+        mapper.Map(editeTransactionViewModel, transaction);
 
-        await repo.UpdateAsync(trx);
+        await repository.UpdateAsync(transaction);
         return MineTransaction.Success;
     }
 
     public async Task<TransactionViewModel?> FindAsync(string id)
     {
-        var trx = await repo.GetByIdAsync(id);
-        return trx is null ? null : new TransactionViewModel(trx);
+        var transaction = await repository.GetByIdAsync(id);
+        return transaction is null ? null : mapper.Map<TransactionViewModel>(transaction);
     }
 
     public async Task<PaginatedList<TransactionViewModel>> ListAsync(
         string userId, int page = 1, int pageSize = 20, TransactionStatus? status = null)
     {
-        var query = repo.GetQueryable()
-            .Where(t => t.UserId == userId.ToString());
+        var query = repository.GetQueryable()
+            .Where(t => t.UserId == userId);
 
         if (status is not null) query = query.Where(t => t.Status == status);
 
@@ -72,30 +63,28 @@ public class TransactionService(
             .ThenByDescending(t => t.CreatTime)
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
-            .Select(t => new TransactionViewModel(t))
+            .Select(t => mapper.Map<TransactionViewModel>(t))
             .ToListAsync();
 
         return new PaginatedList<TransactionViewModel>(items, total, page, pageSize);
     }
-
     public async Task<MineTransaction> ConfirmAsync(string id)
     {
-        var trx = await repo.GetByIdAsync(id);
-        if (trx is null) return MineTransaction.Unknown;
+        var transaction = await repository.GetByIdAsync(id);
+        if (transaction is null) return MineTransaction.Unknown;
 
-        trx.IsConfirmed = true;
-        trx.Status = TransactionStatus.Confirmed;
-        await repo.UpdateAsync(trx);
+        transaction.IsConfirmed = true;
+        transaction.Status = TransactionStatus.Confirmed;
 
+        await repository.UpdateAsync(transaction);
         return MineTransaction.Success;
     }
-
     public async Task<MineTransaction> DeleteAsync(string id)
     {
-        var trx = await repo.GetByIdAsync(id);
-        if (trx is null) return MineTransaction.Unknown;
+        var transaction = await repository.GetByIdAsync(id);
+        if (transaction is null) return MineTransaction.Unknown;
 
-        await repo.DeleteAsync(trx);
+        await repository.DeleteAsync(transaction);
         return MineTransaction.Success;
     }
 }

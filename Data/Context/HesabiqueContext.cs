@@ -1,17 +1,18 @@
-﻿using Domain.Entities;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Design;
+using Microsoft.Extensions.Configuration;
+using Domain.Entities;
 using Domain.Entities.Ledger;
 using Domain.Entities.Partner;
 using Domain.Entities.Tenant;
 using Domain.Entities.Trade;
-using Microsoft.EntityFrameworkCore;
 
 namespace Data.Context;
 
 public class HesabiqueContext(DbContextOptions<HesabiqueContext> options)
     : DbContext(options)
 {
-    /*──────────── DbSet ها ────────────*/
-    // Core
+
     public DbSet<User> Users => Set<User>();
     public DbSet<Role> Roles => Set<Role>();
     public DbSet<UserRoles> UserRoles => Set<UserRoles>();
@@ -42,33 +43,33 @@ public class HesabiqueContext(DbContextOptions<HesabiqueContext> options)
         builder.Entity<UserRoles>()
             .HasKey(ur => new { ur.UserId, ur.RoleId });
 
-       builder.Entity<UserRoles>()
+        builder.Entity<UserRoles>()
             .HasOne(ur => ur.User)
             .WithMany(u => u.UserRoles)
             .HasForeignKey(ur => ur.UserId)
             .OnDelete(DeleteBehavior.Cascade);
 
-       builder.Entity<UserRoles>()
+        builder.Entity<UserRoles>()
             .HasOne(ur => ur.Role)
             .WithMany(r => r.UserRoles)
             .HasForeignKey(ur => ur.RoleId)
             .OnDelete(DeleteBehavior.Cascade);
 
 
-       builder.Entity<Account>()
+        builder.Entity<Account>()
             .HasOne(a => a.Parent)
             .WithMany(a => a.Children)
             .HasForeignKey(a => a.ParentId)
             .OnDelete(DeleteBehavior.Restrict);
 
 
-       builder.Entity<JournalLine>()
+        builder.Entity<JournalLine>()
             .HasOne(l => l.JournalEntry)
             .WithMany(e => e.Lines)
             .HasForeignKey(l => l.JournalEntryId)
             .OnDelete(DeleteBehavior.Cascade);
 
-        
+
         builder.Entity<InvoiceLine>()
             .HasOne(l => l.Invoice)
             .WithMany(i => i.Lines)
@@ -80,13 +81,13 @@ public class HesabiqueContext(DbContextOptions<HesabiqueContext> options)
             .WithOne(c => c.Payment)
             .HasForeignKey<Payment>(p => p.ChequeId)
             .OnDelete(DeleteBehavior.SetNull);
-        
+
         builder.Entity<Cheque>()
             .HasOne(c => c.BankAccount)
             .WithMany(bk => bk.Cheques)
             .HasForeignKey(c => c.BankAccountId)
             .OnDelete(DeleteBehavior.Restrict);
-        
+
         builder.Entity<PartnerSettlement>()
             .HasOne(s => s.Partner)
             .WithMany(p => p.Settlements)
@@ -105,5 +106,40 @@ public class HesabiqueContext(DbContextOptions<HesabiqueContext> options)
             if (fk is not null)
                 fk.DeleteBehavior = DeleteBehavior.Restrict;
         }
+
+        foreach (var entityType in builder.Model.GetEntityTypes())
+        {
+            var clrType = entityType.ClrType;
+            if (clrType.GetProperty("IsDeleted") != null)
+            {
+                var method = typeof(HesabiqueContext).GetMethod(nameof(SetQueryFilter),
+                        System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)!
+                    .MakeGenericMethod(clrType);
+
+                method.Invoke(this, [builder]);
+            }
+        }
+        
+    }
+
+    private void SetQueryFilter<TEntity>(ModelBuilder builder) where TEntity : class
+    {
+        builder.Entity<TEntity>().HasQueryFilter(e => EF.Property<bool>(e, "IsDeleted") == false);
+    }
+    public class HesabiqueContextFactory : IDesignTimeDbContextFactory<HesabiqueContext>
+    {
+        public HesabiqueContext CreateDbContext(string[] args)
+        {
+            var configuration = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json")
+                .Build();
+
+            var optionsBuilder = new DbContextOptionsBuilder<HesabiqueContext>();
+            optionsBuilder.UseSqlServer(configuration.GetConnectionString("Hesabique"));
+
+            return new HesabiqueContext(optionsBuilder.Options);
+        }
     }
 }
+

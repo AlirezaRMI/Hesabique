@@ -22,5 +22,5 @@ public interface IBaseRepository<T> where T : BaseEntity
     Task<T?> GetByIdAsync(string id, string? includes = null);
     Task AddAsync(T entity);
     Task UpdateAsync(T entity);
-    Task DeleteAsync(T entity);
+    Task<bool> DeleteAsync(T entity);
 }

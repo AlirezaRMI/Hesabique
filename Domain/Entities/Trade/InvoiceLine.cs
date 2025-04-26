@@ -8,7 +8,7 @@ public class InvoiceLine: BaseEntity
 
 
     public required string Description { get; set; }
-    public long Qty { get; set; }
+    public long Quantity { get; set; }
     public long UnitPrice { get; set; }
     public long VatRate { get; set; }
 
