@@ -68,6 +68,7 @@ public class TransactionService(
 
         return new PaginatedList<TransactionViewModel>(items, total, page, pageSize);
     }
+
     public async Task<MineTransaction> ConfirmAsync(string id)
     {
         var transaction = await repository.GetByIdAsync(id);
@@ -79,6 +80,7 @@ public class TransactionService(
         await repository.UpdateAsync(transaction);
         return MineTransaction.Success;
     }
+
     public async Task<MineTransaction> DeleteAsync(string id)
     {
         var transaction = await repository.GetByIdAsync(id);

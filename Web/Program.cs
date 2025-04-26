@@ -5,6 +5,7 @@ using Application.MappingProfiles;
 using Data.Context;
 using Ioc;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -38,6 +39,14 @@ builder.Services.AddServices();
 builder.Services.AddDbContext<HesabiqueContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("Hesabique")));
 
+builder.Services.AddDbContext<IdentityContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("Identity")));
+
+builder.Services.AddIdentity<IdentityUser, IdentityRole>()
+    .AddEntityFrameworkStores<IdentityContext>()
+    .AddDefaultTokenProviders();
+
+
 var app = builder.Build();
 
 // Middlewares
@@ -61,5 +70,6 @@ app.MapControllerRoute(
     .WithStaticAssets();
 
 // Database Migration
-app.MigrateDatabase<HesabiqueContext>()
-    .Run();
+app.MigrateDatabase<HesabiqueContext>();
+app.MigrateDatabase<IdentityContext>();
+app.Run();

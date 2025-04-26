@@ -1,4 +1,3 @@
-using Application.Helpers;
 using Application.Services.Interfaces;
 using AutoMapper;
 using Data.Context;
@@ -7,6 +6,7 @@ using Domain.Enum.Transeation;
 using Domain.Enum.User;
 using Domain.IRepository;
 using Domain.ViewModel.User;
+using global.Application.Helpers;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -53,6 +53,7 @@ public class UserService(
         return inc - dec;
     }
 
+    [Obsolete("Obsolete")]
     public async Task<RegisterResult> RegisterAsync(RegisterViewModel registerViewModel)
     {
         if (await FindByUsernameAsync(registerViewModel.UserName) is not null)
@@ -67,6 +68,7 @@ public class UserService(
         return RegisterResult.Success;
     }
 
+    [Obsolete("Obsolete")]
     public async Task<(LoginResult Result, UserViewModel? User)> LoginAsync(LoginUserViewModel loginUserViewModel)
     {
         try
@@ -104,6 +106,7 @@ public class UserService(
             .SingleOrDefaultAsync(u => u.Id == userId);
         return user is null ? null : mapper.Map<UserViewModel>(user);
     }
+
     public async Task<IEnumerable<UserViewModel>> ListAsync(
         int page = 1, int pageSize = 20, string? search = null)
     {

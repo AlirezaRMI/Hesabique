@@ -7,7 +7,6 @@ namespace Application.Services.Interfaces;
 
 public interface ILedgerService
 {
-
     Task<IEnumerable<AccountViewModel>> GetAccountsAsync();
 
     Task<OperationResult> AddAccountAsync(AddAccountViewModel addAccountViewModel);
@@ -23,4 +22,3 @@ public interface ILedgerService
 
     Task<long> GetAccountBalanceAsync(string accountId, DateTime? to = null);
 }
-

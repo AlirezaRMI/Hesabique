@@ -1,4 +1,4 @@
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -9,27 +9,30 @@ public static class HostExtensions
 {
     public static IHost MigrateDatabase<TContext>(this IHost host, int? retry = 0) where TContext : DbContext
     {
-        int retryForAvailability = retry.Value;
-
-        using var scope = host.Services.CreateScope();
-
-        var services = scope.ServiceProvider;
-        var context = services.GetRequiredService<TContext>();
-        var logger = services.GetRequiredService<ILogger<TContext>>();
-
-        try
+        if (retry != null)
         {
-            logger.LogInformation("Migrating database Starter ...");
-            context.Database.Migrate();
-            logger.LogInformation("Migrating database Finished ...");
-        }
-        catch (Exception e)
-        {
-            if (retryForAvailability < 50)
+            int retryForAvailability = retry.Value;
+
+            using var scope = host.Services.CreateScope();
+
+            var services = scope.ServiceProvider;
+            var context = services.GetRequiredService<TContext>();
+            var logger = services.GetRequiredService<ILogger<TContext>>();
+
+            try
             {
-                retryForAvailability++;
-                Thread.Sleep(2000);
-                MigrateDatabase<TContext>(host, retryForAvailability);
+                logger.LogInformation("Migrating database Starter ...");
+                context.Database.Migrate();
+                logger.LogInformation("Migrating database Finished ...");
+            }
+            catch (Exception e)
+            {
+                if (retryForAvailability < 50)
+                {
+                    retryForAvailability++;
+                    Thread.Sleep(1000);
+                    MigrateDatabase<TContext>(host, retryForAvailability);
+                }
             }
         }
 

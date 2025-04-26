@@ -58,7 +58,8 @@ public class AccountService(
 
     public async Task<OperationResult> AddAsync(AddAccountViewModel addAccountViewModel)
     {
-        bool codeExists = await repository.GetQueryable().AnyAsync(a => a.AccountCode == addAccountViewModel.AccountCode);
+        bool codeExists =
+            await repository.GetQueryable().AnyAsync(a => a.AccountCode == addAccountViewModel.AccountCode);
         if (codeExists) return OperationResult.ValidationError;
 
         var entity = mapper.Map<Account>(addAccountViewModel);
@@ -73,7 +74,8 @@ public class AccountService(
 
         if (editAccountViewModel.AccountCode != account.AccountCode)
         {
-            bool duplicate = await repository.GetQueryable().AnyAsync(a => a.AccountCode == editAccountViewModel.AccountCode);
+            bool duplicate = await repository.GetQueryable()
+                .AnyAsync(a => a.AccountCode == editAccountViewModel.AccountCode);
             if (duplicate) return OperationResult.ValidationError;
         }
 

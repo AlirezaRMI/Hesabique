@@ -144,10 +144,6 @@ public class BaseRepository<T>(HesabiqueContext context,DbSet<T> dbSet) : IBaseR
             property.SetValue(entity, true);
             context.Set<T>().Update(entity);
         }
-        else
-        {
-            context.Set<T>().Remove(entity);
-        }
 
         var result = await context.SaveChangesAsync();
         return result > 0;
