@@ -1,7 +1,4 @@
-using System.Security.Cryptography;
-using System.Text;
-
-namespace global::Application.Helpers;
+namespace Application.Helpers;
 
 public static class PasswordHash
 {

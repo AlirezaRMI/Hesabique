@@ -21,12 +21,13 @@ public static class HostExtensions
 
             try
             {
-                logger.LogInformation("Migrating database Starter ...");
+                logger.LogInformation("شروع مهاجرت دیتابیس {ContextName}...", typeof(TContext).Name);
                 context.Database.Migrate();
-                logger.LogInformation("Migrating database Finished ...");
+                logger.LogInformation("مهاجرت دیتابیس {ContextName} با موفقیت انجام شد.", typeof(TContext).Name);
             }
             catch (Exception e)
             {
+                logger.LogError(e, "خطا در مهاجرت دیتابیس {ContextName}", typeof(TContext).Name);
                 if (retryForAvailability < 50)
                 {
                     retryForAvailability++;

@@ -6,12 +6,12 @@ namespace Application.Services.Interfaces;
 
 public interface IUserService
 {
-    Task AddUserAsync(AddUserViewModel vm);
-    Task<EditeResult> EditUserAsync(EditeUserViewModel vm);
+    Task AddUserAsync(AddUserViewModel addUserViewModel);
+    Task<EditeResult> EditUserAsync(EditeUserViewModel editeUserViewModel);
     Task<long> GetBalanceAsync(string userId);
-    Task<RegisterResult> RegisterAsync(RegisterViewModel vm);
+    Task<RegisterResult> RegisterAsync(RegisterViewModel registerViewModel);
 
-    Task<(LoginResult Result, UserViewModel? User)> LoginAsync(LoginUserViewModel vm);
+    Task<(LoginResult Result, UserViewModel? User)> LoginAsync(LoginUserViewModel loginUserViewModel);
 
     Task<UserViewModel?> FindByUsernameAsync(string username);
 

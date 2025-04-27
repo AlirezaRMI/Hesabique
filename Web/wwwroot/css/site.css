@@ -1,31 +1,551 @@
-html {
-  font-size: 14px;
+@font-face {
+    font-family: 'Vazir';
+    src: url('/fonts/Vazir.woff2') format('woff2'),
+         url('/fonts/Vazir.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
 }
 
-@media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
+@font-face {
+    font-family: 'Vazir';
+    src: url('/fonts/Vazir-Bold.woff2') format('woff2'),
+         url('/fonts/Vazir-Bold.woff') format('woff');
+    font-weight: bold;
+    font-style: normal;
 }
 
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+:root {
+    /* رنگ‌های اصلی */
+    --primary-color: #d4af37;
+    --secondary-color: #1a1a1a;
+    --accent-color: #b8860b;
+    --success-color: #2ecc71;
+    --warning-color: #f1c40f;
+    --danger-color: #e74c3c;
+    --light-color: #f5f5f5;
+    --dark-color: #121212;
+    --text-color: #333333;
+    --text-secondary: #666666;
+    --surface-color: #ffffff;
+    --border-color: #e0e0e0;
+    --bg-gradient: linear-gradient(135deg, var(--dark-color), var(--secondary-color));
+
+    /* سایه‌ها */
+    --shadow-sm: 0 2px 4px rgba(0,0,0,0.1);
+    --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
+    --shadow-lg: 0 8px 16px rgba(0,0,0,0.1);
+    --shadow-golden: 0 0 15px rgba(212, 175, 55, 0.2);
+
+    /* فاصله‌ها */
+    --spacing-xs: 0.25rem;
+    --spacing-sm: 0.5rem;
+    --spacing-md: 1rem;
+    --spacing-lg: 1.5rem;
+    --spacing-xl: 2rem;
+
+    /* انیمیشن‌ها */
+    --transition-fast: 0.2s ease;
+    --transition-normal: 0.3s ease;
+    --transition-slow: 0.5s ease;
+
+    /* اندازه‌ها */
+    --header-height: 4rem;
+    --border-radius: 0.5rem;
+    --border-radius-lg: 1rem;
 }
 
-html {
-  position: relative;
-  min-height: 100%;
-}
-
+/* تنظیمات عمومی */
 body {
-  margin-bottom: 60px;
+    font-family: 'Vazir', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    direction: rtl;
+    text-align: right;
+    background-color: var(--light-color);
+    color: var(--text-color);
+    line-height: 1.6;
 }
 
-.form-floating > .form-control-plaintext::placeholder, .form-floating > .form-control::placeholder {
-  color: var(--bs-secondary-color);
-  text-align: end;
+/* نوار ناوبری */
+.navbar {
+    background-color: var(--dark-color) !important;
+    box-shadow: var(--shadow-md);
+    padding: 1rem 0;
+    border-bottom: 2px solid var(--primary-color);
 }
 
-.form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
-  text-align: start;
+.navbar-brand {
+    color: var(--primary-color) !important;
+    font-weight: bold;
+    font-size: 1.5rem;
+    text-shadow: var(--shadow-golden);
+}
+
+.nav-link {
+    color: var(--light-color) !important;
+    transition: all var(--transition-normal);
+    padding: 0.5rem 1rem;
+    margin: 0 0.2rem;
+    border-radius: var(--border-radius);
+}
+
+.nav-link:hover {
+    color: var(--primary-color) !important;
+    transform: translateY(-2px);
+}
+
+/* کارت‌ها */
+.card {
+    background-color: var(--primary-color);
+    border: 1px solid rgba(212, 175, 55, 0.1);
+    box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+    transition: all 0.3s ease;
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+    color: var(--text-color);
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(212, 175, 55, 0.2);
+    border-color: var(--secondary-color);
+}
+
+.card-header {
+    background-color: rgba(212, 175, 55, 0.1);
+    border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+    padding: 1rem;
+    font-weight: bold;
+    color: var(--secondary-color);
+}
+
+/* جداول */
+.table {
+    color: var(--text-color);
+    margin-bottom: 0;
+}
+
+.table thead th {
+    background-color: rgba(212, 175, 55, 0.1);
+    border-bottom: 2px solid var(--secondary-color);
+    font-weight: bold;
+    color: var(--secondary-color);
+}
+
+.table-hover tbody tr:hover {
+    background-color: rgba(212, 175, 55, 0.05);
+}
+
+/* دکمه‌ها */
+.btn {
+    padding: 0.5rem 1.5rem;
+    border-radius: 4px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(45deg, transparent, rgba(212, 175, 55, 0.2), transparent);
+    transform: translateX(-100%);
+    transition: transform 0.6s ease;
+}
+
+.btn:hover::before {
+    transform: translateX(100%);
+}
+
+.btn-primary {
+    background-color: var(--secondary-color);
+    border-color: var(--secondary-color);
+    color: var(--primary-color);
+}
+
+.btn-primary:hover {
+    background-color: var(--accent-color);
+    border-color: var(--accent-color);
+    transform: translateY(-2px);
+}
+
+/* فرم‌ها */
+.form-control {
+    background-color: var(--dark-color);
+    border: 1px solid rgba(212, 175, 55, 0.2);
+    border-radius: 4px;
+    padding: 0.75rem 1rem;
+    color: var(--text-color);
+    transition: all 0.3s ease;
+}
+
+.form-control:focus {
+    border-color: var(--secondary-color);
+    box-shadow: 0 0 0 0.2rem rgba(212, 175, 55, 0.25);
+    background-color: var(--primary-color);
+}
+
+/* دراپ‌داون‌ها */
+.dropdown-menu {
+    background-color: var(--primary-color);
+    border: 1px solid rgba(212, 175, 55, 0.2);
+    box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+    border-radius: 4px;
+}
+
+.dropdown-item {
+    color: var(--text-color);
+    padding: 0.5rem 1rem;
+    transition: all 0.3s ease;
+}
+
+.dropdown-item:hover {
+    background-color: rgba(212, 175, 55, 0.1);
+    color: var(--secondary-color);
+}
+
+/* داشبورد */
+.dashboard-card {
+    background: var(--primary-color);
+    border: 1px solid rgba(212, 175, 55, 0.1);
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+    transition: all 0.3s ease;
+}
+
+.dashboard-card:hover {
+    transform: translateY(-5px);
+    border-color: var(--secondary-color);
+    box-shadow: 0 6px 12px rgba(212, 175, 55, 0.2);
+}
+
+.dashboard-stat {
+    font-size: 2rem;
+    font-weight: bold;
+    color: var(--secondary-color);
+    text-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
+}
+
+.dashboard-label {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+/* مودال */
+.modal-content {
+    background-color: var(--primary-color);
+    border: 1px solid rgba(212, 175, 55, 0.2);
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+}
+
+.modal-header {
+    background-color: rgba(212, 175, 55, 0.1);
+    border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+    color: var(--secondary-color);
+    border-radius: 8px 8px 0 0;
+}
+
+/* اسکرول‌بار */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--dark-color);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--secondary-color);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--accent-color);
+}
+
+/* انیمیشن‌های پایه */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.fade-in {
+    animation: fadeIn var(--transition-normal);
+}
+
+/* کلاس‌های کمکی */
+.text-golden {
+    color: var(--secondary-color);
+    text-shadow: var(--shadow-golden);
+}
+
+.bg-golden {
+    background-color: var(--secondary-color);
+}
+
+.border-golden {
+    border-color: var(--secondary-color);
+}
+
+/* رسپانسیو */
+@media (max-width: 768px) {
+    .navbar-nav {
+        margin-top: 1rem;
+        background-color: var(--primary-color);
+        padding: 1rem;
+        border-radius: 8px;
+        border: 1px solid rgba(212, 175, 55, 0.2);
+    }
+    
+    .card {
+        margin-bottom: 1rem;
+    }
+    
+    .table-responsive {
+        margin-bottom: 1rem;
+    }
+
+    :root {
+        --spacing-lg: 1rem;
+        --spacing-xl: 1.5rem;
+    }
+}
+
+/* افکت‌های ویژه */
+.golden-border {
+    position: relative;
+}
+
+.golden-border::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    background: linear-gradient(45deg, var(--secondary-color), var(--accent-color), var(--secondary-color));
+    border-radius: 10px;
+    z-index: -1;
+    opacity: 0.5;
+    transition: opacity 0.3s ease;
+}
+
+.golden-border:hover::before {
+    opacity: 1;
+}
+
+/* آیکون‌ها */
+.icon-golden {
+    color: var(--secondary-color);
+    text-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
+}
+
+/* بج */
+.badge {
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    font-weight: 500;
+}
+
+.badge-success {
+    background-color: rgba(46, 204, 113, 0.2);
+    color: #2ecc71;
+}
+
+.badge-warning {
+    background-color: rgba(241, 196, 15, 0.2);
+    color: #f1c40f;
+}
+
+.badge-danger {
+    background-color: rgba(231, 76, 60, 0.2);
+    color: #e74c3c;
+}
+
+/* Auth Forms */
+.auth-container {
+    min-height: calc(100vh - var(--header-height));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    background: var(--bg-gradient);
+}
+
+.auth-box {
+    background: var(--surface-color);
+    border-radius: var(--border-radius-lg);
+    padding: 2.5rem;
+    width: 100%;
+    max-width: 480px;
+    box-shadow: var(--shadow-lg);
+    animation: fadeIn var(--transition-normal);
+}
+
+.auth-title {
+    text-align: center;
+    color: var(--primary-color);
+    margin-bottom: 2rem;
+    font-weight: 700;
+    font-size: 1.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+}
+
+.auth-title i {
+    font-size: 1.5rem;
+}
+
+.auth-form .form-group {
+    margin-bottom: 1.5rem;
+}
+
+.auth-form label {
+    font-weight: 500;
+    margin-bottom: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--text-color);
+}
+
+.auth-form label i {
+    color: var(--primary-color);
+}
+
+.auth-form .form-control {
+    background-color: var(--surface-color);
+    border: 2px solid var(--border-color);
+    border-radius: var(--border-radius);
+    padding: 0.875rem 1rem;
+    color: var(--text-color);
+    transition: all var(--transition-normal);
+    font-size: 1rem;
+}
+
+.auth-form .form-control:focus {
+    border-color: var(--primary-color);
+    box-shadow: var(--shadow-golden);
+    outline: none;
+}
+
+.auth-form .btn-primary {
+    background: var(--primary-color);
+    border: none;
+    padding: 1rem;
+    font-weight: 600;
+    font-size: 1rem;
+    color: var(--dark-color);
+    transition: all var(--transition-normal);
+    border-radius: var(--border-radius);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.auth-form .btn-primary:hover {
+    background: var(--accent-color);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-golden);
+}
+
+.auth-links {
+    text-align: center;
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border-color);
+}
+
+.auth-links a {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: 500;
+    transition: all var(--transition-normal);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.auth-links a:hover {
+    color: var(--accent-color);
+    transform: translateY(-1px);
+}
+
+.form-check {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-top: 1rem;
+}
+
+.form-check-input {
+    width: 1.25rem;
+    height: 1.25rem;
+    margin-top: 0;
+    border: 2px solid var(--border-color);
+    border-radius: 0.25rem;
+    cursor: pointer;
+}
+
+.form-check-input:checked {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.form-check-label {
+    margin-bottom: 0;
+    user-select: none;
+    color: var(--text-color);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.text-danger {
+    color: var(--danger-color);
+    font-size: 0.875rem;
+    margin-top: 0.5rem;
+    display: block;
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .auth-container {
+        padding: 1rem;
+    }
+    
+    .auth-box {
+        padding: 1.5rem;
+    }
+    
+    .auth-title {
+        font-size: 1.5rem;
+    }
+    
+    .auth-form .btn-primary {
+        padding: 0.875rem;
+    }
 }

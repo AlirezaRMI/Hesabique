@@ -1,3 +1,4 @@
+using Application.Helpers;
 using Application.Services.Interfaces;
 using AutoMapper;
 using Data.Context;
@@ -6,7 +7,6 @@ using Domain.Enum.Transeation;
 using Domain.Enum.User;
 using Domain.IRepository;
 using Domain.ViewModel.User;
-using global.Application.Helpers;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -62,7 +62,7 @@ public class UserService(
         var user = mapper.Map<User>(registerViewModel);
         user.Password = PasswordHash.EncodePasswordMd5(registerViewModel.Password);
         user.Status = Status.Active;
-        user.IsActive = false;
+        user.IsActive = true;
         user.CreateDate = DateOnly.FromDateTime(DateTime.Now);
         await userRepository.AddAsync(user);
         return RegisterResult.Success;

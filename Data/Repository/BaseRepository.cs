@@ -6,22 +6,24 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Data.Repository;
 
-public class BaseRepository<T>(HesabiqueContext context,DbSet<T> dbSet) : IBaseRepository<T>
+public class BaseRepository<T>(HesabiqueContext context) : IBaseRepository<T>
     where T : BaseEntity
 {
+    protected readonly DbSet<T> DbSet = context.Set<T>();
+    
     public IQueryable<T> GetQueryable()
     {
-        return context.Set<T>().AsQueryable();
+        return DbSet.AsQueryable();
     }
 
     public async Task<List<T>> GetAllAsync()
     {
-        return await context.Set<T>().ToListAsync();
+        return await DbSet.ToListAsync();
     }
 
     public async Task<IReadOnlyList<T>> GetAllAsync(Expression<Func<T, bool>> predicate)
     {
-        return await context.Set<T>().Where(predicate).ToListAsync();
+        return await DbSet.Where(predicate).ToListAsync();
     }
 
     public async Task<IReadOnlyList<T>> GetAllAsync(
@@ -29,7 +31,7 @@ public class BaseRepository<T>(HesabiqueContext context,DbSet<T> dbSet) : IBaseR
         Func<IQueryable<T>, IOrderedQueryable<T>>? order = null,
         Expression<Func<T, object>>[]? includes = null)
     {
-        IQueryable<T> query = dbSet;
+        IQueryable<T> query = DbSet;
         if (includes != null)
         {
             foreach (var include in includes)
@@ -48,7 +50,7 @@ public class BaseRepository<T>(HesabiqueContext context,DbSet<T> dbSet) : IBaseR
 
     public async Task<IReadOnlyList<T>> GetAllAsync(Expression<Func<T, bool>> predicate, IOrderedQueryable<T> order = null, string? includes = null)
     {
-        IQueryable<T> query = dbSet;
+        IQueryable<T> query = DbSet;
 
         if (!string.IsNullOrWhiteSpace(includes))
         {
@@ -71,17 +73,17 @@ public class BaseRepository<T>(HesabiqueContext context,DbSet<T> dbSet) : IBaseR
 
     public async Task<IReadOnlyList<T>> GetAllAsync(Expression<Func<T, bool>> predicate, IOrderedQueryable<T> order)
     {
-        return await context.Set<T>().Where(predicate).ToListAsync();
+        return await DbSet.Where(predicate).ToListAsync();
     }
 
     public async Task <T?> GetByIdAsync(string id)
     {
-       return await context.Set<T>().FindAsync(id);
+       return await DbSet.FindAsync(id);
     }
 
     public async Task<T?> GetByIdAsync(string id, Expression<Func<T, object>>[]? includes = null)
     {
-        IQueryable<T> query = dbSet;
+        IQueryable<T> query = DbSet;
 
         if (includes != null)
         {
@@ -118,12 +120,12 @@ public class BaseRepository<T>(HesabiqueContext context,DbSet<T> dbSet) : IBaseR
 
     public async Task<T?> GetByIdAsync(string id, string? includes = null)
     {
-        return await context.Set<T>().Include(includes).SingleOrDefaultAsync(x=>x.Id == id);
+        return await DbSet.Include(includes).SingleOrDefaultAsync(x=>x.Id == id);
     }
 
     public async Task AddAsync(T entity)
     {
-        await context.Set<T>().AddAsync(entity);
+        await DbSet.AddAsync(entity);
         await context.SaveChangesAsync();
     }
 
@@ -142,7 +144,7 @@ public class BaseRepository<T>(HesabiqueContext context,DbSet<T> dbSet) : IBaseR
         if (property is not null && property.PropertyType == typeof(bool))
         {
             property.SetValue(entity, true);
-            context.Set<T>().Update(entity);
+            DbSet.Update(entity);
         }
 
         var result = await context.SaveChangesAsync();

@@ -18,9 +18,8 @@ public class Transaction : BaseEntity
     public TimeOnly CreatTime { get; set; }
 
     #region Relation
-
-    [ForeignKey(nameof(UserId))]
-    public Guid TenantId { get; set; }
+    
+    public string TenantId { get; set; } = null!;
     public Tenant.Tenant Tenant { get; set; } = null!;
     
     public string? UserId { get; set; }

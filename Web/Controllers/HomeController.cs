@@ -1,20 +1,19 @@
 using System.Diagnostics;
+using Application.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Web.Models;
 
 namespace Web.Controllers;
 
-public class HomeController : Controller
+// [Authorize] - Temporarily removed for debugging
+public class HomeController(IUserService userService, ILogger<HomeController> logger) : BaseController
 {
-    private readonly ILogger<HomeController> _logger;
-
-    public HomeController(ILogger<HomeController> logger)
-    {
-        _logger = logger;
-    }
-
+    [HttpGet]
     public IActionResult Index()
     {
+        logger.LogInformation("User {UserName} accessed Index page", User.Identity?.Name);
         return View();
     }
 
