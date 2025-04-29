@@ -16,7 +16,7 @@ public class Account : BaseEntity
 
     public string? ParentId { get; set; }
     public Account? Parent { get; set; }
-    public ICollection<Account> Children { get; set; } = [];
+    public ICollection<Account?> Children { get; set; } = [];
     public Tenant.Tenant Tenant { get; set; } = null!;
 
     #endregion

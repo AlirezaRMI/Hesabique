@@ -1,0 +1,35 @@
+@if (TempData["SuccessMessage"] != null)
+{
+<script>
+    $(document).ready(function (e) {
+        ShowMessage("موفقیت آمیز", '@TempData["SuccessMessage"]', "success")
+    })
+</script>
+}
+
+@if (TempData["InfoMessage"] != null)
+{
+<script>
+    $(document).ready(function (e) {
+        ShowMessage("اعلان", '@TempData["InfoMessage"]', "info")
+    })
+</script>
+}
+
+@if (TempData["WarningMessage"] != null)
+{
+<script>
+    $(document).ready(function (e) {
+        ShowMessage("هشدار", '@TempData["WarningMessage"]', "warning")
+    })
+</script>
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+<script>
+    $(document).ready(function (e) {
+        ShowMessage("خطا", '@TempData["ErrorMessage"]', "error")
+    })
+</script>
+}

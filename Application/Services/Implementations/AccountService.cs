@@ -10,15 +10,15 @@ using Microsoft.EntityFrameworkCore;
 namespace Application.Services.Implementations;
 
 public class AccountService(
-    IBaseRepository<Account> repository,
-    IBaseRepository<JournalLine> lineRepo,
+    IBaseRepository<Account?> repository,
+    IBaseRepository<JournalLine?> lineRepo,
     IMapper mapper) : IAccountService
 {
     public async Task<IEnumerable<AccountTreeNodeViewModel>> GetTreeAsync()
     {
         var accounts = await repository.GetAllAsync();
 
-        var dictionary = new Dictionary<string, Account>();
+        var dictionary = new Dictionary<string, Account?>();
         foreach (var account in accounts)
             if (account.Id != null)
                 dictionary.Add(account.Id, account);

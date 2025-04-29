@@ -1,0 +1,34 @@
+﻿@model Domain.ViewModel.User.EditeUserViewModel
+@{
+    ViewBag.Title = "ویرایش کاربر";
+    Layout = "_Layout";
+}
+<div class="col-md-6 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+
+            <h6 class="card-title">ویرایش اطلاعات کاربری</h6>
+
+            <form asp-controller="User" asp-action="EditeUser" method="post" class="forms-sample">
+                @Html.AntiForgeryToken()
+                <input type="hidden" asp-for="Id"/>
+                <div class="mb-3">
+                    <label class="form-label">نام کاربری</label>
+                    <input asp-for="UserName" type="text" class="form-control" autocomplete="off">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">شماره حساب</label>
+                    <input asp-for="AccountCode" type="text" class="form-control">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">آدرس</label>
+                    <input asp-for="Address" type="text" class="form-control" autocomplete="off">
+                </div>
+
+                <button type="submit" class="btn btn-success me-2">ویرایش</button>
+                <button asp-controller="Home" asp-action="Index" class="btn btn-secondary">لغو</button>
+            </form>
+
+        </div>
+    </div>
+</div>

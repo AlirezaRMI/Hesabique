@@ -110,7 +110,7 @@ public class HesabiqueContext(DbContextOptions<HesabiqueContext> options)
         foreach (var entityType in builder.Model.GetEntityTypes())
         {
             var clrType = entityType.ClrType;
-            if (clrType.GetProperty("IsDeleted") != null)
+            if (clrType.GetProperty("IsDelete") != null)
             {
                 var method = typeof(HesabiqueContext).GetMethod(nameof(SetQueryFilter),
                         System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)!
@@ -124,7 +124,7 @@ public class HesabiqueContext(DbContextOptions<HesabiqueContext> options)
 
     private void SetQueryFilter<TEntity>(ModelBuilder builder) where TEntity : class
     {
-        builder.Entity<TEntity>().HasQueryFilter(e => EF.Property<bool>(e, "IsDeleted") == false);
+        builder.Entity<TEntity>().HasQueryFilter(e => EF.Property<bool>(e, "IsDelete") == false);
     }
     public class HesabiqueContextFactory : IDesignTimeDbContextFactory<HesabiqueContext>
     {

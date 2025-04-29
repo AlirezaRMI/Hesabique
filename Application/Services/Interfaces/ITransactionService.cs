@@ -6,9 +6,9 @@ namespace Application.Services.Interfaces;
 
 public interface ITransactionService
 {
-    Task<AddTransactionResult> CreateAsync(AddTransactionViewModel vm, string? userId);
+    Task<AddTransactionResult> CreateAsync(AddTransactionViewModel addTransactionViewModel, string? userId);
 
-    Task<MineTransaction> UpdateAsync(EditeTransactionViewModel vm);
+    Task<MineTransaction> UpdateAsync(EditeTransactionViewModel editeTransactionViewModel, string? userId);
 
     Task<TransactionViewModel?> FindAsync(string id);
 
@@ -19,4 +19,7 @@ public interface ITransactionService
     Task<MineTransaction> ConfirmAsync(string id);
 
     Task<MineTransaction> DeleteAsync(string id);
+    
+    Task<int> GetUserTransactionsCountAsync(string userId);
+    Task<List<TransactionViewModel>> GetUserTransactionsPagingAsync(string userId, int page, int pageSize);
 }

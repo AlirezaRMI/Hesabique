@@ -19,11 +19,11 @@ public class Transaction : BaseEntity
 
     #region Relation
     
-    public string TenantId { get; set; } = null!;
-    public Tenant.Tenant Tenant { get; set; } = null!;
+    public string? TenantId { get; set; }
+    public Tenant.Tenant Tenant { get; set; }
     
     public string? UserId { get; set; }
-    public User User { get; set; } = null!;
+    public User User { get; set; }
     
     public string? PaymentId { get; set; }
     public Payment? Payment { get; set; }

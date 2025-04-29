@@ -1,0 +1,52 @@
+﻿@using Domain.ViewModel.User
+@model UserViewModel
+<div class="row">
+	<div class="col-md-10 grid-margin stretch-card">
+		<div class="card">
+			<div class="card-body">
+				<h6 class="card-title">اطلاعات کاربری</h6>
+				<form method="post" class="forms-sample">
+					<input type="hidden" value="@Model.Id"/>
+					<input type="hidden" value="@Model.Password"/>
+					<div class="row mb-3">
+						<label class="col-sm-2 col-form-label">
+							نام
+							کاربری
+						</label>
+						<div class="col-sm-9">
+							<input value="@Model.UserName" type="text" class="form-control" readonly>
+						</div>
+					</div>
+					<div class="row mb-3">
+						<label class="col-sm-2 col-form-label">شماره حساب</label>
+						<div class="col-sm-9">
+							<input type="text" class="form-control" value="@Model.AccountCode" readonly
+							       autocomplete="off">
+						</div>
+					</div>
+					<div class="row mb-3">
+						<label class="col-sm-2  col-form-label">
+							آدرس
+						</label>
+						<div class="col-sm-9">
+							<input value="@Model.Address" type="text" class="form-control" readonly autocomplete="off">
+						</div>
+					</div>
+
+				</form>
+
+			</div>
+		</div>
+	</div>
+	<div class="col-md-2 grid-margin stretch-card text-center d-flex justify-content-center ">
+		<div class="card">
+			<div class="card-body">
+				<h6 class="card-title">تصویر کاربر</h6>
+				<div class="d-flex align-items-start">
+					<img src="~/assets/images/AVATAR.jpg"    class="rounded-circle border border-2 shadow"
+					     style="width: 200px; height: 200px; object-fit: cover"  alt="...">
+					</div>
+			</div>
+		</div>
+	</div>
+</div>

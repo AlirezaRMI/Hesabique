@@ -11,9 +11,9 @@ using Microsoft.EntityFrameworkCore;
 namespace Application.Services.Implementations;
 
 public class LedgerService(
-    IBaseRepository<Account> accountRepository,
-    IBaseRepository<JournalEntry> journalEntryRepository,
-    IBaseRepository<JournalLine> lineRepository,
+    IBaseRepository<Account?> accountRepository,
+    IBaseRepository<JournalEntry?> journalEntryRepository,
+    IBaseRepository<JournalLine?> lineRepository,
     IMapper mapper) : ILedgerService
 {
     public async Task<IEnumerable<AccountViewModel>> GetAccountsAsync()

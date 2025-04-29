@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore;
 namespace Application.Services.Implementations;
 
 public class TransactionService(
-    IBaseRepository<Transaction> repository,
+    IBaseRepository<Transaction?> repository,
     IMapper mapper) : ITransactionService
 {
     public async Task<AddTransactionResult> CreateAsync(
@@ -29,8 +29,8 @@ public class TransactionService(
         await repository.AddAsync(transaction);
         return AddTransactionResult.Success;
     }
-
-    public async Task<MineTransaction> UpdateAsync(EditeTransactionViewModel editeTransactionViewModel)
+    
+    public async Task<MineTransaction> UpdateAsync(EditeTransactionViewModel editeTransactionViewModel, string? userId)
     {
         if (editeTransactionViewModel.Id is null) return MineTransaction.Unknown;
 
@@ -46,6 +46,10 @@ public class TransactionService(
     public async Task<TransactionViewModel?> FindAsync(string id)
     {
         var transaction = await repository.GetByIdAsync(id);
+        if (transaction == null)
+            return null;    
+            
+        
         return transaction is null ? null : mapper.Map<TransactionViewModel>(transaction);
     }
 
@@ -88,5 +92,21 @@ public class TransactionService(
 
         await repository.DeleteAsync(transaction);
         return MineTransaction.Success;
+    }
+
+    public async Task<int> GetUserTransactionsCountAsync(string userId)
+    {
+        return await repository.GetUserTransactionsCountAsync(userId);
+    }
+
+    public async Task<List<TransactionViewModel>> GetUserTransactionsPagingAsync(string userId, int page, int pageSize)
+    {
+        int skip = (page - 1) * pageSize;
+
+        var transactions = await repository.GetUserTransactionsPagingAsync(userId, skip, pageSize);
+
+        return transactions
+            .Select(t => new TransactionViewModel(t))
+            .ToList();
     }
 }

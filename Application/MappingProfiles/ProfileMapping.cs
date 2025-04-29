@@ -40,7 +40,8 @@ namespace Application.MappingProfiles
             CreateMap<AddBankAccountViewModel, BankAccount>();
 
             // Transaction
-            CreateMap<Transaction, TransactionViewModel>();
+            CreateMap<Transaction, TransactionViewModel>()
+                .ForMember(dest => dest.IsDelete, opt => opt.Ignore());
             CreateMap<AddTransactionViewModel, Transaction>();
             CreateMap<EditeTransactionViewModel, Transaction>();
 

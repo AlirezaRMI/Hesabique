@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore;
 namespace Application.Services.Implementations;
 
 public class InvoiceService(
-    IBaseRepository<Invoice> repository,
-    IBaseRepository<InvoiceLine> lineRepository,
+    IBaseRepository<Invoice?> repository,
+    IBaseRepository<InvoiceLine?> lineRepository,
     IMapper mapper) : IInvoiceService
 {
     public async Task<OperationResult> CreateAsync(AddInvoiceViewModel addInvoiceViewModel)
@@ -62,7 +62,7 @@ public class InvoiceService(
     public async Task<PaginatedList<InvoiceViewModel>> ListAsync(
         InvoiceFilterViewModel filter, int page = 1, int size = 20)
     {
-        IQueryable<Invoice> query = repository.GetQueryable();
+        IQueryable<Invoice?> query = repository.GetQueryable();
 
         if (filter.FromDate is not null)
             query = query.Where(i => i.IssueDate >= filter.FromDate);

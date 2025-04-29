@@ -7,16 +7,19 @@ using Domain.Enum.Transeation;
 using Domain.Enum.User;
 using Domain.IRepository;
 using Domain.ViewModel.User;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace Application.Services.Implementations;
 
 public class UserService(
-    IBaseRepository<User> userRepository,
+    IBaseRepository<User?> userRepository,
     HesabiqueContext context,
     ILogger<UserService> logger,
-    IMapper mapper) : IUserService
+    IMapper mapper,
+    UserManager<IdentityUser> userManager,
+    SignInManager<IdentityUser> signInManager) : IUserService
 {
     public async Task AddUserAsync(AddUserViewModel addUserViewModel)
     {
@@ -69,26 +72,22 @@ public class UserService(
     }
 
     [Obsolete("Obsolete")]
-    public async Task<(LoginResult Result, UserViewModel? User)> LoginAsync(LoginUserViewModel loginUserViewModel)
+    public async Task<(LoginResult, UserViewModel?)> LoginAsync(LoginUserViewModel loginUserViewModel)
     {
         try
         {
-            var user = await userRepository.GetQueryable()
-                .SingleOrDefaultAsync(u => u.UserName == loginUserViewModel.UserName);
-
-            if (user is null ||
-                user.Password != PasswordHash.EncodePasswordMd5(loginUserViewModel.Password))
+            var user = await userRepository.GetQueryable().SingleOrDefaultAsync(x => x.UserName == loginUserViewModel.UserName);
+            if (user is null || user.Password != PasswordHash.EncodePasswordMd5(loginUserViewModel.Password))
                 return (LoginResult.NotFound, null);
 
             if (user.Status != Status.Active)
                 return (LoginResult.NotActive, null);
 
-            var userVm = mapper.Map<UserViewModel>(user);
-            return (LoginResult.Success, userVm);
+            return (LoginResult.Success, new(user));
         }
-        catch (Exception ex)
+        catch (Exception e)
         {
-            logger.LogError(ex, "Login error for {User}", loginUserViewModel.UserName);
+            logger.LogError($"when user by user name {loginUserViewModel.UserName} occurred error :" + e.Message);
             return (LoginResult.Error, null);
         }
     }
@@ -105,6 +104,19 @@ public class UserService(
         var user = await userRepository.GetQueryable()
             .SingleOrDefaultAsync(u => u.Id == userId);
         return user is null ? null : mapper.Map<UserViewModel>(user);
+    }
+
+    public async Task<long> GetUserBalanceAsync(string id)
+    {
+        var increase = await context.Transactions
+            .Where(t => t.UserId == id && t.Type == TransactionType.Increase)
+            .SumAsync(t => t.Price);
+
+        var decrease = await context.Transactions
+            .Where(t => t.UserId == id && t.Type == TransactionType.Decrease)
+            .SumAsync(t => t.Price);
+
+        return increase - decrease;
     }
 
     public async Task<IEnumerable<UserViewModel>> ListAsync(

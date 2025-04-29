@@ -6,6 +6,8 @@ public class Tenant : BaseEntity
 {
     public required string Name { get; set; }
 
+    public required string Job { get; set; }
+
     #region Relation
 
     public ICollection<User> Users { get; set; } = [];

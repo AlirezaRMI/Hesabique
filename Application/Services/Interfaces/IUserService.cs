@@ -11,11 +11,12 @@ public interface IUserService
     Task<long> GetBalanceAsync(string userId);
     Task<RegisterResult> RegisterAsync(RegisterViewModel registerViewModel);
 
-    Task<(LoginResult Result, UserViewModel? User)> LoginAsync(LoginUserViewModel loginUserViewModel);
+    Task<(LoginResult, UserViewModel?)> LoginAsync(LoginUserViewModel loginUserViewModel);
 
     Task<UserViewModel?> FindByUsernameAsync(string username);
 
     Task<UserViewModel?> FindByIdAsync(string userId);
+    Task<long> GetUserBalanceAsync(string id);
 
     Task<IEnumerable<UserViewModel>> ListAsync(int page = 1, int pageSize = 20, string? search = null);
 }

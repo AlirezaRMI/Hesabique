@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore;
 namespace Application.Services.Implementations;
 
 public class PaymentService(
-    IBaseRepository<Payment> paymentRepository,
-    IBaseRepository<BankAccount> bankRepository,
+    IBaseRepository<Payment?> paymentRepository,
+    IBaseRepository<BankAccount?> bankRepository,
     IMapper mapper) : IPaymentService
 {
     public async Task<OperationResult> RegisterAsync(AddPaymentViewModel addPaymentViewModel)
