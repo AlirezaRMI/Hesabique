@@ -60,7 +60,8 @@ public class AccountService(
     {
         bool codeExists =
             await repository.GetQueryable().AnyAsync(a => a.AccountCode == addAccountViewModel.AccountCode);
-        if (codeExists) return OperationResult.ValidationError;
+        if (codeExists)
+            return OperationResult.ValidationError;
 
         var entity = mapper.Map<Account>(addAccountViewModel);
         await repository.AddAsync(entity);

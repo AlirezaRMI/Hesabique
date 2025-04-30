@@ -1,0 +1,27 @@
+﻿@model Domain.ViewModel.Tenant.AddTenantViewModel
+@{
+    ViewData["Title"] = "افزودن مستاجر جدید";
+}
+<div class="container mt-4">
+    <h2 class="text-primary mb-4">افزودن مستاجر جدید</h2>
+    <form asp-action="CreateTenant" method="post">
+        @Html.AntiForgeryToken()
+        <div class="mb-3">
+            <label asp-for="Name" class="form-label">نام و نام خانوادگی</label>
+            <input asp-for="Name" class="form-control"/>
+            <span asp-validation-for="Name" class="text-danger"></span>
+        </div>
+        <div class="mb-3">
+            <label asp-for="Job" class="form-label">شغل </label>
+            <input asp-for="Job" class="form-control"/>
+            <span asp-validation-for="Job" class="text-danger"></span>
+        </div>
+        <div class="mb-3">
+            <label asp-for="Description" class="form-label">توضیحات</label>
+            <input asp-for="Description" class="form-control"/>
+            <span asp-validation-for="Description" class="text-danger"></span>
+        </div>
+        <button type="submit" class="btn btn-success">ثبت</button>
+        <a asp-action="Index" class="btn btn-secondary ms-2">بازگشت</a>
+    </form>
+</div>

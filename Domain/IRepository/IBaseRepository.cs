@@ -20,7 +20,7 @@ public interface IBaseRepository<T> where T : BaseEntity
     Task<T?> GetByIdAsync(string id);
     Task<T?> GetByIdAsync(string id, Expression<Func<T, object>>[]? includes = null);
     Task<T?> GetByIdAsync(string id, string includes = null);
-    Task AddAsync(T? entity);
+    Task<T> AddAsync(T? entity);
     Task UpdateAsync(T entity);
     Task<bool> DeleteAsync(T? entity);
     

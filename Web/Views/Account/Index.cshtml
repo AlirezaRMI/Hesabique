@@ -1,0 +1,29 @@
+﻿@model IEnumerable<Domain.ViewModel.Ledger.AccountTreeNodeViewModel>
+
+@{
+    ViewData["Title"] = "لیست حساب‌ها";
+}
+
+<div class="container mt-4">
+    <h2 class="mb-4 text-primary">لیست حساب‌های ثبت شده</h2>
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info">حسابی ثبت نشده است.</div>
+    }
+    else
+    {
+        <ul class="list-group">
+            @foreach (var account in Model)
+            {
+                @await Html.PartialAsync("_AccountNode", (object)account)
+            }
+        </ul>
+    }
+
+    <div class="mt-4">
+        <a class="btn btn-success" asp-controller="Account" asp-action="CreateAccount">
+            <i class="bi bi-plus-circle"></i> افزودن حساب جدید
+        </a>
+    </div>
+</div>

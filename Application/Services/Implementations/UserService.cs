@@ -66,8 +66,10 @@ public class UserService(
         user.Password = PasswordHash.EncodePasswordMd5(registerViewModel.Password);
         user.Status = Status.Active;
         user.IsActive = true;
+        user.Id = Guid.NewGuid().ToString();
+        user.TenantId = user.Id;    
         user.CreateDate = DateOnly.FromDateTime(DateTime.Now);
-        await userRepository.AddAsync(user);
+        
         return RegisterResult.Success;
     }
 

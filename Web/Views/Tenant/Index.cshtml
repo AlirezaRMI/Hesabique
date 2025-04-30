@@ -1,0 +1,42 @@
+﻿@model IEnumerable<Domain.ViewModel.Tenant.TenantViewModel>
+@{
+    ViewData["Title"] = "لیست مستاجران";
+}
+<div class="container mt-4">
+    <h2 class="text-primary mb-4">لیست مستاجران</h2>
+    <a class="btn btn-success mb-3" asp-action="CreateTenant">افزودن مستاجر جدید</a>
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info">هیچ مستاجری ثبت نشده است.</div>
+    }
+    else
+    {
+        <table class="table table-bordered">
+            <thead class="table-dark">
+            <tr>
+                <th>نام مستاجر</th>
+                <th>شغل</th>
+                <th>توضیحات</th>
+                <th>عملیات</th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach (var tenant in Model)
+            {
+                <tr>
+                    <td>@tenant.Name</td>
+                    <td>@tenant.Job</td>
+                    <td>@tenant.Description</td>
+                    <td>
+                        <a asp-action="EditTenant" asp-route-id="@tenant.Id" class="btn btn-warning btn-sm">ویرایش</a>
+                        <form asp-action="DeleteTenant" asp-route-id="@tenant.Id" method="post" style="display:inline;">
+                            <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('حذف شود؟')">حذف</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    }
+</div>

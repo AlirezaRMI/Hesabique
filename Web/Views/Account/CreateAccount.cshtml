@@ -1,0 +1,52 @@
+﻿@using System.Security.Claims
+@model Domain.ViewModel.Ledger.AddAccountViewModel
+
+@{
+    ViewData["Title"] = "ایجاد حساب جدید";
+    Layout = "_Layout";
+}
+
+<div class="container mt-4">
+    <h2 class="text-primary mb-4">ایجاد حساب جدید</h2>
+
+    <form asp-controller="Account" asp-action="CreateAccount" method="post">
+        @Html.AntiForgeryToken()
+        <input type="hidden" asp-for="TenantId" value="@User.FindFirst(ClaimTypes.Role)?.Value"/>
+        <div class="mb-3">
+            <label asp-for="AccountCode" class="form-label">شماره حساب</label>
+            <input asp-for="AccountCode" class="form-control" required/>
+            <span asp-validation-for="AccountCode" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Name" class="form-label">نام بانک مبدا حساب</label>
+            <input asp-for="Name" class="form-control"/>
+            <span asp-validation-for="Name" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Type" class="form-label">نوع حساب</label>
+            <select asp-for="Type" asp-items="Html.GetEnumSelectList<Domain.Enumes.Ledger.AccountType>()"
+                    class="form-select"></select>
+            <span asp-validation-for="Type" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="ParentId" class="form-label">حساب والد (اختیاری)</label>
+            <input asp-for="ParentId" class="form-control"/>
+            <span asp-validation-for="ParentId" class="text-danger"></span>
+        </div>
+
+        <button type="submit" class="btn btn-success">ثبت</button>
+        <a asp-action="Index" class="btn btn-secondary ms-2">بازگشت</a>
+
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
+        }
+    </form>
+</div>
+
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+}

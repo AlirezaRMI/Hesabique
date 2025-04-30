@@ -1,10 +1,17 @@
-﻿namespace Domain.Enumes.Ledger;
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace Domain.Enumes.Ledger;
 
 public enum AccountType
 {
-    Asset,
-    Liability,
-    Equity,
-    Revenue,
-    Expense
+    [Display(Name = "جاری")]
+    CurrentAccount,
+    [Display(Name = "پس انداز")]
+    Savings,
+    [Display(Name = "درآمد")]
+    Income,
+    [Display(Name = "سود")]
+    Interest,
+    [Display(Name = "سایر")]
+    Other
 }

@@ -1,0 +1,69 @@
+﻿@model List<Domain.ViewModel.Ledger.JournalEntryViewModel>
+
+@{
+    ViewData["Title"] = "لیست اسناد حسابداری";
+}
+
+<div class="container mt-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="text-primary">لیست اسناد حسابداری</h2>
+        <a class="btn btn-success" asp-action="CreateJournal">
+            <i class="bi bi-plus-lg"></i> افزودن سند جدید
+        </a>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info text-center">
+            سندی ثبت نشده است.
+        </div>
+    }
+    else
+    {
+        <table class="table table-bordered table-hover">
+            <thead class="table-dark">
+            <tr>
+                <th>کد سند</th>
+                <th>تاریخ ثبت</th>
+                <th>شماره مرجع</th>
+                <th>تعداد خطوط</th>
+                <th>مبلغ کل</th>
+                <th>عملیات</th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach (var entry in Model)
+            {
+                <tr>
+                    <td>@entry.TenantId</td>
+                    <td>@entry.CreateDate.ToString("yyyy/MM/dd")</td>
+                    <td>@entry.Reference ?? "-"</td>
+                    <td>@entry.Lines?.Count() ?? 0</td>
+                    <td>
+
+                        @if (entry.Lines != null)
+                        {
+                            var total = entry.Lines.Sum(l => (l.Debit) + (l.Credit));
+                            
+                            @total.ToString("#,0")
+                        }
+
+                        تومان
+                    </td>
+                    <td>
+                        <a asp-action="Index" asp-route-id="@entry.TenantId" class="btn btn-warning btn-sm">
+                            <i class="bi bi-pencil-square"></i> ویرایش
+                        </a>
+                        <a asp-action="Index" asp-route-id="@entry.TenantId" class="btn btn-danger btn-sm">
+                            <i class="bi bi-pencil-square"></i> حذف
+                        </a>
+                        <a asp-action="Index" asp-route-id="@entry.TenantId" class="btn btn-success btn-sm">
+                            <i class="bi bi-pencil-square"></i> تایید نهایی
+                        </a>
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    }
+</div>

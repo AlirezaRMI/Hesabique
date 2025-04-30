@@ -11,9 +11,9 @@ public interface IAccountService
 
     Task<long> GetBalanceAsync(string accountId, DateTime? to = null);
 
-    Task<OperationResult> AddAsync(AddAccountViewModel vm);
+    Task<OperationResult> AddAsync(AddAccountViewModel addAccountViewModel);
 
-    Task<OperationResult> UpdateAsync(EditAccountViewModel vm);
+    Task<OperationResult> UpdateAsync(EditAccountViewModel editAccountViewModel);
 
     Task<OperationResult> DeleteAsync(string accountId);
 }

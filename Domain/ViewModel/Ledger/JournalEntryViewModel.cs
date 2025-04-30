@@ -5,13 +5,13 @@ namespace Domain.ViewModel.Ledger;
 
 public class JournalEntryViewModel
 {
-    public string? Id { get; set; }
+    public string? TenantId { get; set; }
 
     public DateTime CreateDate { get; set; }
 
     public string? Reference { get; set; }
 
-    public object Lines { get; set; }
-    
-    
+    public List<JournalLineViewModel> Lines { get; set; } = new();
+
+
 }

@@ -1,11 +1,13 @@
 ﻿using AutoMapper;
 using Domain.Entities.Ledger;
 using Domain.Entities;
+using Domain.Entities.Tenant;
 using Domain.Entities.Trade;
 using Domain.ViewModel;
 using Domain.ViewModel.Invoice;
 using Domain.ViewModel.Ledger;
 using Domain.ViewModel.Payment;
+using Domain.ViewModel.Tenant;
 using Domain.ViewModel.Transaction;
 using Domain.ViewModel.User;
 
@@ -26,7 +28,18 @@ namespace Application.MappingProfiles
             CreateMap<AddAccountViewModel, Account>();
             CreateMap<AddJournalEntryViewModel, JournalEntry>();
             CreateMap<EditAccountViewModel, Account>();
+            CreateMap<AddJournalLineViewModel, JournalLine>();
+            CreateMap<AddJournalEntryViewModel, JournalEntry>();
+            CreateMap<AddJournalLineViewModel, JournalLine>();
+            
+            //Tenant
+            CreateMap<Tenant, TenantViewModel>();
+            CreateMap<AddTenantViewModel, Tenant>();
+            CreateMap<EditTenantViewModel, Tenant>();
+            CreateMap<TenantViewModel, EditTenantViewModel>();
+            CreateMap<EditTenantViewModel, TenantViewModel>();
 
+            
             // Invoice
             CreateMap<Invoice, InvoiceViewModel>();
             CreateMap<InvoiceLine, InvoiceLineViewModel>();
@@ -41,7 +54,9 @@ namespace Application.MappingProfiles
 
             // Transaction
             CreateMap<Transaction, TransactionViewModel>()
-                .ForMember(dest => dest.IsDelete, opt => opt.Ignore());
+                .ForMember(dest => dest.IsDelete,
+                    opt 
+                        => opt.Ignore());
             CreateMap<AddTransactionViewModel, Transaction>();
             CreateMap<EditeTransactionViewModel, Transaction>();
 

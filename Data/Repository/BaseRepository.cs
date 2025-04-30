@@ -124,10 +124,11 @@ public class BaseRepository<T>(HesabiqueContext context) : IBaseRepository<T>
         return await DbSet.Include(includes).SingleOrDefaultAsync(x=>x.Id == id);
     }
 
-    public async Task AddAsync(T? entity)
+    public async Task<T> AddAsync(T? entity)
     {
         await DbSet.AddAsync(entity);
         await context.SaveChangesAsync();
+        return entity;
     }
 
     public async Task UpdateAsync(T entity)

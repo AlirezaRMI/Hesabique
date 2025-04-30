@@ -6,12 +6,13 @@ namespace Domain.ViewModel.Ledger;
 public class AddAccountViewModel
 {
 
-    public required string AccountCode { get; set; }
-
-    public required string Name { get; set; }
+    public  string AccountCode { get; set; }
+    
+    public required string? TenantId { get; set; }
+    public  string Name { get; set; }
 
     public AccountType Type { get; set; }
 
-    public string ParentId { get; set; }
+    public string? ParentId { get; set; }
     
 }

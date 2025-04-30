@@ -11,9 +11,9 @@ using Microsoft.EntityFrameworkCore;
 namespace Application.Services.Implementations;
 
 public class LedgerService(
-    IBaseRepository<Account?> accountRepository,
-    IBaseRepository<JournalEntry?> journalEntryRepository,
-    IBaseRepository<JournalLine?> lineRepository,
+    IBaseRepository<Account> accountRepository,
+    IBaseRepository<JournalEntry> journalEntryRepository,
+    IBaseRepository<JournalLine> lineRepository,
     IMapper mapper) : ILedgerService
 {
     public async Task<IEnumerable<AccountViewModel>> GetAccountsAsync()
@@ -52,35 +52,33 @@ public class LedgerService(
 
     public async Task<OperationResult> DeleteAccountAsync(string accountId)
     {
-        var acc = await accountRepository.GetQueryable()
+        var account = await accountRepository.GetQueryable()
             .Include(a => a.Children)
             .SingleOrDefaultAsync(a => a.Id == accountId);
 
-        if (acc is null) return OperationResult.NotFound;
-        if (acc.Children.Any()) return OperationResult.ValidationError;
+        if (account is null) return OperationResult.NotFound;
+        if (account.Children.Any()) return OperationResult.ValidationError;
 
         bool used = await lineRepository.GetQueryable()
             .AnyAsync(l => l.AccountId == accountId);
         if (used) return OperationResult.ValidationError;
 
-        await accountRepository.DeleteAsync(acc);
+        await accountRepository.DeleteAsync(account);
         return OperationResult.Success;
     }
 
-    public async Task<OperationResult> PostJournalAsync(AddJournalEntryViewModel model)
+    public async Task<OperationResult> PostJournalAsync(AddJournalEntryViewModel model, string tenantId)
     {
-        var linesInput = model.Lines.ToList();
-
-        if (!linesInput.Any())
+        if (model.Lines == null || !model.Lines.Any())
             return OperationResult.ValidationError;
 
-        foreach (var line in linesInput)
+        foreach (var line in model.Lines)
         {
-            if (line.Debit is null && line.Credit is null)
+            if (line.Debit <= 0 && line.Credit <= 0)
                 return OperationResult.ValidationError;
         }
 
-        var lines = mapper.Map<List<JournalLine>>(linesInput);
+        var lines = mapper.Map<List<JournalLine>>(model.Lines);
 
         var totalDebit = lines.Sum(l => l.Debit);
         var totalCredit = lines.Sum(l => l.Credit);
@@ -92,12 +90,16 @@ public class LedgerService(
         {
             CreateDate = model.CreateDate,
             Reference = model.Refrence,
+            TenantId = tenantId,
             Lines = lines
         };
 
         await journalEntryRepository.AddAsync(entry);
         return OperationResult.Success;
     }
+
+
+
 
     public async Task<PaginatedList<JournalEntryViewModel>> GetEntriesAsync(
         DateTime? from, DateTime? to, int page = 1, int size = 20)
@@ -131,9 +133,15 @@ public class LedgerService(
         if (to is not null)
             query = query.Where(l => l.JournalEntry.CreateDate <= to.Value);
 
-        long debit = await query.SumAsync(l => l.Debit);
-        long credit = await query.SumAsync(l => l.Credit);
+        long? debit = await query.SumAsync(l => l.Debit);
+        long? credit = await query.SumAsync(l => l.Credit);
 
-        return debit - credit;
+        return (long)(debit - credit)!;
+    }
+    
+    public async Task<List<JournalEntryViewModel>> ListAsync(string? tenantId)
+    {
+        var entries = await journalEntryRepository.GetAllAsync();
+        return mapper.Map<List<JournalEntryViewModel>>(entries);
     }
 }

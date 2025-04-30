@@ -1,0 +1,87 @@
+﻿
+@using System.Security.Claims
+@model Domain.ViewModel.Ledger.AddJournalEntryViewModel
+
+@{
+    ViewData["Title"] = "ثبت سند حسابداری";
+}
+
+<div class="container mt-4">
+    <h4 class="mb-4 text-primary">ثبت سند حسابداری جدید</h4>
+
+    <form asp-controller="Journal" asp-action="CreateJournal" method="post">
+        @Html.AntiForgeryToken()
+        <input type="hidden" asp-for="TenantId" value="@User.FindFirst(ClaimTypes.Role)?.Value"/>
+        <div class="mb-3">
+            <label asp-for="Refrence" class="form-label">شماره مرجع</label>
+            <input asp-for="Refrence" class="form-control" placeholder="شماره مرجع را وارد کنید" />
+            <span asp-validation-for="Refrence" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="CreateDate" class="form-label">تاریخ سند</label>
+            <input asp-for="CreateDate" type="date" class="form-control" />
+            <span asp-validation-for="CreateDate" class="text-danger"></span>
+        </div>
+
+        <hr />
+        <h5 class="text-secondary">خطوط سند</h5>
+
+        <table class="table table-bordered" id="linesTable">
+            <thead class="table-light">
+            <tr>
+                <th>کد حساب</th>
+                <th>بدهکار</th>
+                <th>بستانکار</th>
+                <th>توضیحات</th>
+                <th>عملیات</th>
+            </tr>
+            </thead>
+            <tbody id="linesBody">
+            @if (Model.Lines != null && Model.Lines.Any())
+            {
+                for (int i = 0; i < Model.Lines.Count; i++)
+                {
+                    <tr>
+                        <td><input name="Lines[@i].AccountId" class="form-control" required /></td>
+                        <td><input name="Lines[@i].Debit" type="number" class="form-control" /></td>
+                        <td><input name="Lines[@i].Credit" type="number" class="form-control" /></td>
+                        <td><input name="Lines[@i].Memo" class="form-control" /></td>
+                        <td><button type="button" class="btn btn-danger btn-sm" onclick="removeRow(this)">حذف</button></td>
+                    </tr>
+                }
+            }
+            </tbody>
+        </table>
+
+        <button type="button" class="btn btn-outline-primary" onclick="addLine()">افزودن سطر</button>
+
+        <div class="mt-4">
+            <button type="submit" class="btn btn-success">ثبت سند</button>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <script>
+        let index = @Model.Lines?.Count ?? 0;
+
+        function addLine() {
+            const tbody = document.getElementById("linesBody");
+            const row = document.createElement("tr");
+            row.innerHTML = `
+                <td><input name="Lines[${index}].AccountId" class="form-control" required /></td>
+                <td><input name="Lines[${index}].Debit" type="number" class="form-control" /></td>
+                <td><input name="Lines[${index}].Credit" type="number" class="form-control" /></td>
+                <td><input name="Lines[${index}].Memo" class="form-control" /></td>
+                <td><button type="button" class="btn btn-danger btn-sm" onclick="removeRow(this)">حذف</button></td>
+            `;
+            tbody.appendChild(row);
+            index++;
+        }
+
+        function removeRow(button) {
+            button.closest("tr").remove();
+        }
+    </script>
+}

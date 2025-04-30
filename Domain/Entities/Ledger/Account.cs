@@ -5,7 +5,7 @@ namespace Domain.Entities.Ledger;
 
 public class Account : BaseEntity
 {
-    public string TenantId { get; set; }
+ 
    
 
     public required string AccountCode { get; set; }
@@ -15,6 +15,8 @@ public class Account : BaseEntity
     #region Relation
 
     public string? ParentId { get; set; }
+    
+    public required string TenantId { get; set; }
     public Account? Parent { get; set; }
     public ICollection<Account?> Children { get; set; } = [];
     public Tenant.Tenant Tenant { get; set; } = null!;

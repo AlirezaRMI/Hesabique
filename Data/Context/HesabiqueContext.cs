@@ -64,10 +64,11 @@ public class HesabiqueContext(DbContextOptions<HesabiqueContext> options)
 
 
         builder.Entity<JournalLine>()
-            .HasOne(l => l.JournalEntry)
+            .HasOne(j => j.JournalEntry)
             .WithMany(e => e.Lines)
-            .HasForeignKey(l => l.JournalEntryId)
+            .HasForeignKey(j => j.JournalEntryId)
             .OnDelete(DeleteBehavior.Cascade);
+
 
 
         builder.Entity<InvoiceLine>()

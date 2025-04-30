@@ -1,0 +1,49 @@
+﻿@model Domain.ViewModel.Ledger.EditAccountViewModel
+
+@{
+    ViewData["Title"] = "ویرایش حساب";
+    Layout = "_Layout";
+}
+
+<div class="container mt-4">
+    <h2 class="text-warning mb-4">ویرایش حساب</h2>
+
+    <form asp-action="EditAccount" method="post">
+        @Html.AntiForgeryToken()
+
+        <input type="hidden" asp-for="Id" />
+
+        <div class="mb-3">
+            <label asp-for="AccountCode" class="form-label">کد حساب</label>
+            <input asp-for="AccountCode" class="form-control" />
+            <span asp-validation-for="AccountCode" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Name" class="form-label">نام حساب</label>
+            <input asp-for="Name" class="form-control" />
+            <span asp-validation-for="Name" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Type" class="form-label">نوع حساب</label>
+            <select asp-for="Type" asp-items="Html.GetEnumSelectList<Domain.Enumes.Ledger.AccountType>()" class="form-select"></select>
+            <span asp-validation-for="Type" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="ParentId" class="form-label">حساب والد (اختیاری)</label>
+            <input asp-for="ParentId" class="form-control" />
+            <span asp-validation-for="ParentId" class="text-danger"></span>
+        </div>
+
+        <div class="mt-4">
+            <button type="submit" class="btn btn-warning">ذخیره تغییرات</button>
+            <a asp-action="Index" class="btn btn-secondary ms-2">بازگشت</a>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
